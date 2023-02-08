@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用戶列表</title>
+    <link th:href="@{/index.css}" rel="stylesheet" />
+</head>
+<body>
+
+<div align="center">
+    <a href="/addUser">新增用戶</a>
+    <div>用戶個人資料</div>
+    <table>
+        <tr>
+            <th>用戶Id</th>
+            <th>姓名</th>
+            <th>電話</th>
+            <th></th>
+        </tr>
+        <tr th:each="i:${list}">
+            <td th:text="${i.userId}"></td>
+            <td th:text="${i.name}"></td>
+            <td th:text="${i.tel}"></td>
+            <td><a href="#" th:href="@{/editUser/{userId}(userId=${i.userId})}">Edit</a></td>
+            <td><a href="#" th:href="@{/deleteUser/{userId}(userId=${i.userId})}">Delete</a></td>
+        </tr>
+    </table>
+
+    <a href="/index">回首頁</a>
+</div>
+
+
+</body>
+</html>
