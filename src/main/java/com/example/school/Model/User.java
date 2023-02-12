@@ -1,8 +1,11 @@
 package com.example.school.Model;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class User {
 
     private Integer userId;
@@ -14,36 +17,10 @@ public class User {
     @NotBlank(message = "電話不能為空白")
     private String Tel;
 
-    public Integer getUserId() {
-        return userId;
-    }
+    @NotBlank(message = "信箱不能為空白")
+    private String email;
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
+    @NotNull(message = "性別不能為空")
+    private String gender;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTel() {
-        return Tel;
-    }
-
-    public void setTel(String tel) {
-        Tel = tel;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "userId=" + userId +
-                ", name='" + name + '\'' +
-                ", Tel='" + Tel + '\'' +
-                '}';
-    }
 }

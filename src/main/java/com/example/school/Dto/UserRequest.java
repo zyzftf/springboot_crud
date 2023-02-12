@@ -2,7 +2,9 @@ package com.example.school.Dto;
 
 
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
+@Data
 public class UserRequest {
 
     @NotBlank(message = "姓名不能為空白")
@@ -12,27 +14,10 @@ public class UserRequest {
     @NotBlank(message = "電話不能為空白")
     private String tel;
 
-    public String getName() {
-        return name;
-    }
+    @NotBlank(message = "信箱不能為空白")
+    private String email;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    @NotNull(message = "性別不能為空")
+    private String gender;
 
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    public String getTel() {
-        return tel;
-    }
-
-    @Override
-    public String toString() {
-        return "UserRequest{" +
-                "name='" + name + '\'' +
-                ", tel='" + tel + '\'' +
-                '}';
-    }
 }

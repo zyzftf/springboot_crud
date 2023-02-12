@@ -22,7 +22,7 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public List<User> getUsers() {
-        String sql = "SELECT id, name, tel FROM User";
+        String sql = "SELECT id, name, tel, email, gender FROM User";
 
         Map<String, Object> map = new HashMap<>();
 
@@ -33,11 +33,13 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public Integer createUser(UserRequest userRequest) {
-        String sql = "INSERT INTO User(name, tel) VALUES(:name, :tel)";
+        String sql = "INSERT INTO User(name, tel, email, gender) VALUES(:name, :tel, :email, :gender)";
 
         Map<String, Object> map = new HashMap<>();
         map.put("name", userRequest.getName());
         map.put("tel", userRequest.getTel());
+        map.put("email", userRequest.getEmail());
+        map.put("gender", userRequest.getGender());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
@@ -48,7 +50,7 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public User getUserById(Integer userId) {
-        String sql = "SELECT id, name, tel FROM User WHERE id=:id";
+        String sql = "SELECT id, name, tel, email, gender FROM User WHERE id=:id";
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", userId);
@@ -65,12 +67,14 @@ public class UserDaoImpl implements UserDao{
     @Override
     public void updateUser(User user) {
 
-        String sql = "UPDATE User SET name=:name, tel=:tel WHERE id=:id";
+        String sql = "UPDATE User SET name=:name, tel=:tel, email=:email, gender=:gender WHERE id=:id";
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", user.getUserId());
         map.put("name", user.getName());
         map.put("tel", user.getTel());
+        map.put("email", user.getEmail());
+        map.put("gender", user.getGender());
 
         namedParameterJdbcTemplate.update(sql, map);
     }

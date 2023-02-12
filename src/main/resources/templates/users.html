@@ -14,13 +14,16 @@
         <tr>
             <th>用戶Id</th>
             <th>姓名</th>
+            <th>信箱</th>
             <th>電話</th>
-            <th></th>
+            <th>性別</th>
         </tr>
         <tr th:each="i:${list}">
             <td th:text="${i.userId}"></td>
             <td th:text="${i.name}"></td>
+            <td th:text="${i.email}"></td>
             <td th:text="${i.tel}"></td>
+            <td th:text="${i.gender}"></td>
             <td><a href="#" th:href="@{/editUser/{userId}(userId=${i.userId})}">Edit</a></td>
             <td><a href="#" th:href="@{/deleteUser/{userId}(userId=${i.userId})}">Delete</a></td>
         </tr>
