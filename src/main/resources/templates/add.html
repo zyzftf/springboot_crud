@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>新增用戶</title>
+
+    <style>
+        .error{
+            color: red;
+        }
+    </style>
 </head>
 <body>
 
@@ -14,17 +20,23 @@
             <tr>
                 <td>姓名:</td>
                 <td><input type="text" th:field="*{name}" placeholder="Enter name"></td>
-                <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></td>
+                <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></td>
             </tr>
             <tr>
                 <td>信箱</td>
                 <td><input type="text" th:field="*{email}" placeholder="Enter email"></td>
-                <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></td>
+                <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error"></td>
             </tr>
             <tr>
                 <td>電話:</td>
                 <td><input type="text" th:field="*{tel}" placeholder="Enter telephone"></td>
-                <td th:if="${#fields.hasErrors('tel')}" th:errors="*{tel}"></td>
+                <td th:if="${#fields.hasErrors('tel')}" th:errors="*{tel}" class="error"></td>
+            </tr>
+            <tr>
+                <td>性別:</td>
+                <td><input type="radio" th:field="*{gender}" th:value="男">男</td>
+                <td><input type="radio" th:field="*{gender}" th:value="女">女</td>
+                <td th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="error"></td>
             </tr>
             <tr>
                 <td><button type="submit">新增資料</button></td>

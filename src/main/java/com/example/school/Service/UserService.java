@@ -6,9 +6,9 @@ import com.example.school.Model.User;
 import java.util.List;
 
 public interface UserService {
-    List<User> getUsers();
+    List<User> getUsers();  //  查詢用戶資料
 
-    Integer createUser(UserRequest userRequest);
+    Integer createUser(UserRequest userRequest);  // 創建新用戶
 
     User getUserById(Integer userId);
 

@@ -25,15 +25,18 @@ public class UserController {
     }
 
     @GetMapping("/Users")
-    public String getUsers(Model model){
+    public String getUsers(Model model){         //  取得所有使用者資料
+
+        //  取得使用者數據
         List<User> userList = userService.getUsers();
+
         model.addAttribute("list", userList);
 
         return "users";
     }
 
     @GetMapping("/addUser")
-    public String addUser(Model model){
+    public String addUser(Model model){        //    添加新用戶
         UserRequest userRequest = new UserRequest();
         model.addAttribute("user", userRequest);
 
@@ -54,7 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/editUser/{userId}")
-    public ModelAndView editUser(@PathVariable Integer userId){
+    public ModelAndView editUser(@PathVariable Integer userId){      //  修改用戶
         User user = userService.getUserById(userId);
         System.out.println(user.toString());
 
@@ -64,8 +67,10 @@ public class UserController {
         return mav;
     }
 
-    @PostMapping("/updateUser")
+    @PostMapping("/updateUser")   //  當使用者在前端按下確認修改按鈕, 就會進入到這個方法裡面
     public String updateUser(@Valid @ModelAttribute("editUser") User user, BindingResult bindingResult){
+
+        //  使用 BindingResult 來捕捉前端表單的錯誤
         if(bindingResult.hasErrors()){
             System.out.println("update error: "+user.toString());
             return "EditUser";
@@ -77,7 +82,7 @@ public class UserController {
     }
 
     @GetMapping("/deleteUser/{userId}")
-    public String deleteUser(@PathVariable Integer userId){
+    public String deleteUser(@PathVariable Integer userId){     //  刪除用戶
         userService.deleteUserById(userId);
         System.out.println("delete!!!");
         return "redirect:/Users";

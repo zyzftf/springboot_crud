@@ -1,5 +1,6 @@
 package com.example.school.Model;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -18,6 +19,7 @@ public class User {
     private String Tel;
 
     @NotBlank(message = "信箱不能為空白")
+    @Email(message = "信箱必須為email格式")
     private String email;
 
     @NotNull(message = "性別不能為空")
