@@ -1,11 +1,14 @@
 package com.example.school.Dao;
 
+import com.example.school.Dto.UserQueryParams;
 import com.example.school.Dto.UserRequest;
 import com.example.school.Model.User;
 import com.example.school.RowMapper.UserRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -21,10 +24,28 @@ public class UserDaoImpl implements UserDao{
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<User> getUsers() {
-        String sql = "SELECT id, name, tel, email, gender FROM User";
+    public Integer countUser(String search) {
+
+        String sql = "SELECT count(*) FROM User";
+        if (search != null && !search.isEmpty()) {
+            sql += " WHERE name LIKE '%" + search + "%'";
+        }
+        Map<String, Object> map = new HashMap<>();
+        return namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+    }
+
+    @Override
+    public List<User> getUsers(UserQueryParams userQueryParams) {
+        String sql = "SELECT id, name, tel, email, gender FROM User WHERE 1=1";
 
         Map<String, Object> map = new HashMap<>();
+
+        sql = addFilteringSql(sql, map, userQueryParams);
+
+        //  分頁
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", userQueryParams.getLimit());
+        map.put("offset", userQueryParams.getOffset());
 
         List<User> userList = namedParameterJdbcTemplate.query(sql, map, new UserRowMapper());
 
@@ -87,6 +108,16 @@ public class UserDaoImpl implements UserDao{
         map.put("userId", userId);
 
         namedParameterJdbcTemplate.update(sql, map);
+    }
+
+    private String addFilteringSql(String sql, Map<String, Object> map, UserQueryParams userQueryParams){
+
+        //  查詢條件
+        if(userQueryParams.getSearch() != null){
+            sql = sql+ " AND name LIKE :search";
+            map.put("search", "%"+userQueryParams.getSearch()+"%");
+        }
+        return sql;
     }
 
 }

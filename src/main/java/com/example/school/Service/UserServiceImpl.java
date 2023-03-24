@@ -1,6 +1,7 @@
 package com.example.school.Service;
 
 import com.example.school.Dao.UserDao;
+import com.example.school.Dto.UserQueryParams;
 import com.example.school.Dto.UserRequest;
 import com.example.school.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,14 @@ public class UserServiceImpl implements UserService{
     private UserDao userDao;
 
     @Override
-    public List<User> getUsers() {
-        return userDao.getUsers();
+    public List<User> getUsers(UserQueryParams userQueryParams) { // size = 10, page=1
+
+        return userDao.getUsers(userQueryParams);
+    }
+
+    @Override
+    public Integer countUser(String search) {
+        return userDao.countUser(search);
     }
 
     @Override

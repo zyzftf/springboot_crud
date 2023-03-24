@@ -1,18 +1,26 @@
 package com.example.school.Controller;
 
+import com.example.school.Dto.UserQueryParams;
 import com.example.school.Dto.UserRequest;
 import com.example.school.Model.User;
 import com.example.school.Service.UserService;
+import com.example.school.util.Page;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Validated
 @Controller
 public class UserController {
 
@@ -24,16 +32,64 @@ public class UserController {
         return "index";
     }
 
-    @GetMapping("/Users")
-    public String getUsers(Model model){         //  取得所有使用者資料
+    @GetMapping("/Users")     //  取得所有使用者資料, 並分頁顯示
+    public String getUsers(Model model, RedirectAttributes redirectAttributes,
+                           @RequestParam(required = false) String search,
+                           @RequestParam(defaultValue = "1") String page,
+                           @RequestParam(defaultValue = "10") @Min(0) @Max(1000) Integer pageSize){
 
-        //  取得使用者數據
-        List<User> userList = userService.getUsers();
+        System.out.println("search = "+search+", page = "+page+", pageSize = "+pageSize);
+        try {
+            //  當前頁碼
+            int currentPage = Integer.parseInt(page);
 
-        model.addAttribute("list", userList);
+            //  取得符合條件的用戶數量
+            Integer totalUsers = userService.countUser(search);
 
+            //  頁碼總數量
+            int totalPages = (int) Math.ceil((double)totalUsers / pageSize);
+            System.out.println("符合條件的用戶數量: "+totalUsers+", 頁碼總數量: "+totalPages+"當前頁碼: "+currentPage);
+
+            //  如果頁碼不正確, 則進行重定向, 顯示正確的url路徑
+            if (currentPage < 1 || currentPage > totalPages) {
+                redirectAttributes.addAttribute("page", "1");
+                redirectAttributes.addAttribute("pageSize", "10");
+                redirectAttributes.addAttribute("search", search);
+                return "redirect:/Users";
+            }
+
+            int offset = (currentPage-1) * pageSize;
+            UserQueryParams userQueryParams = new UserQueryParams();
+            userQueryParams.setLimit(pageSize);
+            userQueryParams.setOffset(offset);
+            userQueryParams.setSearch(search);
+
+            //  取得當前頁用戶數據
+            List<User> userList = userService.getUsers(userQueryParams);
+
+            //  分頁
+            Page<User> userPage = new Page<>();
+            userPage.setResult(userList);
+
+            List<Integer> options = new ArrayList<>();
+            options.add(5);
+            options.add(10);
+            options.add(20);
+
+            model.addAttribute("options", options);
+            model.addAttribute("currentPage", currentPage);
+            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("totalUsers", totalUsers);
+            model.addAttribute("search", search);
+            model.addAttribute("pageSize", pageSize);
+            model.addAttribute("userPage", userPage);
+        }catch (NumberFormatException e){
+            redirectAttributes.addAttribute("page", "1");
+            return "redirect:/Users";
+        }
         return "users";
     }
+
 
     @GetMapping("/addUser")
     public String addUser(Model model){        //    添加新用戶
@@ -81,7 +137,7 @@ public class UserController {
         return "redirect:/Users";
     }
 
-    @GetMapping("/deleteUser/{userId}")
+    @GetMapping ("/deleteUser/{userId}")
     public String deleteUser(@PathVariable Integer userId){     //  刪除用戶
         userService.deleteUserById(userId);
         System.out.println("delete!!!");

@@ -4,12 +4,29 @@
     <meta charset="UTF-8">
     <title>用戶列表</title>
     <link th:href="@{/index.css}" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/bootstrap.min.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
-<div align="center">
-    <a href="/addUser">新增用戶</a>
+<div align="center" id="result">
+    <button onclick="location.href='/addUser'" class="btn btn-info">新增用戶</button>
     <div>用戶個人資料</div>
+    <span>
+        <label for="pageSize">每頁顯示</label>
+        <select id="pageSize"
+                th:value="${pageSize}"
+                onchange="changePageSize(this.value)">
+            <option th:each="option:${options}"
+                    th:value="${option}"
+                    th:text="${option}"
+                    th:selected="${option == pageSize}">
+            </option>
+        </select>
+        <input type="text" id="textBoxValue">
+        <button onclick="searchBtn()" class="btn-info">查詢</button>
+        <button onclick="clearBtn()" class="btn-danger">清除</button>
+    </span>
     <table>
         <tr>
             <th>用戶Id</th>
@@ -18,20 +35,93 @@
             <th>電話</th>
             <th>性別</th>
         </tr>
-        <tr th:each="i:${list}">
+        <tr th:each="i:${userPage.result}">
             <td th:text="${i.userId}"></td>
             <td th:text="${i.name}"></td>
             <td th:text="${i.email}"></td>
             <td th:text="${i.tel}"></td>
             <td th:text="${i.gender}"></td>
-            <td><a href="#" th:href="@{/editUser/{userId}(userId=${i.userId})}">Edit</a></td>
-            <td><a href="#" th:href="@{/deleteUser/{userId}(userId=${i.userId})}">Delete</a></td>
+            <td>
+                <form th:action="@{/editUser/{userId}(userId=${i.userId})}" method="get">
+                    <button type="submit" class="btn btn-info">Edit</button>
+                </form>
+            </td>
+            <td>
+                <form th:action="@{/deleteUser/{userId}(userId=${i.userId})}" method="get">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
         </tr>
     </table>
+
+
+    <div th:if="${totalPages > 1}">
+        <a th:hidden="${currentPage == 1}"
+           th:href="@{/Users(page = ${currentPage} - 1, pageSize = ${pageSize}, search = ${search})}"
+           th:text="上一頁"></a>
+        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:if="${currentPage != i}" th:href="@{/Users(page = ${i}, pageSize = ${pageSize}, search = ${search})}">[[${i}]]</a>
+            <span th:unless="${currentPage != i}">[[${i}]]</span>&nbsp;
+        </span>
+        <a th:hidden="${currentPage == totalPages}"
+           th:href="@{/Users(page = ${currentPage} + 1, pageSize = ${pageSize}, search = ${search})}"
+           th:text="下一頁"></a>
+
+        <span th:text="'共' + ${totalPages} + '頁, 當前第' + ${currentPage} + '頁, 總共' + ${totalUsers} + '位用戶'"></span>
+    </div>
+
 
     <a href="/index">回首頁</a>
 </div>
 
+<script type="text/javascript">
+    function changePageSize(newPageSize){
+        let currentPage = [[${currentPage}]];
+        let url = "/Users?page=" + currentPage + "&pageSize=" + newPageSize;
+        console.log("url = " + url);
+        $.ajax({
+           type:'GET',
+           url:url,
+           success: function (result){
+               window.history.pushState({}, '', '/Users?page=' + currentPage + "&pageSize=" + newPageSize);
+               $('#result').html(result);
+           }
+        });
+    }
+
+    function searchBtn(){
+        let currentPage = [[${currentPage}]];
+        let searchText = document.getElementById("textBoxValue").value;
+        let url = "/Users?page=" + currentPage + "&search="+searchText;
+        console.log("url = "+url);
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (result){
+                window.history.pushState({}, '', '/Users?page=' + currentPage + "&search=" + searchText);
+                $('#result').html(result);
+                $('#textBoxValue').val(searchText);
+            }
+        });
+    }
+
+    function clearBtn(){
+        let currentPage = [[${currentPage}]];
+        let pageSize = [[${pageSize}]];
+        let url = "/Users?page=" + currentPage + "pageSize=" + pageSize +"&search=";
+        console.log("url = "+url);
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function (result){
+                window.history.pushState({}, '', '/Users?page=' + currentPage +"pageSize=" + pageSize + "&search=");
+                $('#result').html(result);
+                $('#textBoxValue').val("");
+            }
+        });
+    }
+
+</script>
 
 </body>
 </html>
